@@ -13,8 +13,13 @@ class SignalReceiver extends BroadcastReceiver {
   {
       String action = intent.getAction();
       if (action.equals(Signal.BROADCAST_PLAYBACK_PLAY)) {
-        this.signal.play();
+        if(!this.signal.isPlaying){
+          this.signal.play();
+          this.signal.isPlaying = true;
+        }
       } else if (action.equals(Signal.BROADCAST_EXIT)) {
+        this.signal.getNotifyManager().cancelAll();
+        this.signal.stop();
         this.signal.exitNotification();
       }
   }

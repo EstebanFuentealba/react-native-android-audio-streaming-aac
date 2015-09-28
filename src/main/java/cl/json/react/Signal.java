@@ -1,6 +1,6 @@
 package cl.json.react;
 
-
+import java.io.IOException;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,9 +22,17 @@ import android.content.IntentFilter;
 import android.app.PendingIntent;
 import android.app.NotificationManager;
 import android.content.ServiceConnection;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 import com.spoledge.aacdecoder.MultiPlayer;
 import com.spoledge.aacdecoder.PlayerCallback;
+
+import cl.json.react.Mode;
+import cl.json.react.EventsReceiver;
+import cl.json.react.AACStreamingModule;
 
 
 public class Signal extends Service implements OnErrorListener,
@@ -55,12 +63,46 @@ public class Signal extends Service implements OnErrorListener,
   private final SignalReceiver receiver = new SignalReceiver(this);
   private Context context;
   private String streamingURL;
-  private isPlaying = false;
+  public boolean isPlaying           = false;
+  private boolean isPreparingStarted  = false;
+  private boolean isPrepared          = false;
+  private EventsReceiver eventsReceiver;
+  private AACStreamingModule module;
 
+  private TelephonyManager phoneManager;
+  private PhoneListener phoneStateListener;
 
-  public void setData(Context context, Class<?> clsActivity) {
+  public void setData(Context context, Class<?> clsActivity, AACStreamingModule module) {
     this.context = context;
     this.clsActivity = clsActivity;
+    this.module = module;
+
+    this.eventsReceiver = new EventsReceiver(this.module);
+
+
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.CREATED));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.DESTROYED));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.STARTED));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.CONNECTING));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.START_PREPARING));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.PREPARED));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.PLAYING));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.STOPPED));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.COMPLETED));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.ERROR));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.BUFFERING_START));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.BUFFERING_END));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.METADATA_UPDATED));
+		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.ALBUM_UPDATED));
+
+
+    this.phoneStateListener = new PhoneListener(this.module);
+    this.phoneManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+		if (this.phoneManager != null) {
+			this.phoneManager.listen(this.phoneStateListener , PhoneStateListener.LISTEN_CALL_STATE);
+		}
+
+
   }
   @Override
 	public void onCreate() {
@@ -70,6 +112,9 @@ public class Signal extends Service implements OnErrorListener,
         intentFilter.addAction(BROADCAST_PLAYBACK_PLAY);
         intentFilter.addAction(BROADCAST_EXIT);
         registerReceiver(this.receiver, intentFilter);
+
+
+
     try {
         this.aacPlayer = new MultiPlayer(this, AAC_BUFFER_CAPACITY_MS, AAC_DECODER_CAPACITY_MS);
     } catch (UnsatisfiedLinkError e) {
@@ -89,18 +134,27 @@ public class Signal extends Service implements OnErrorListener,
       });
     } catch (Throwable t) {
     }
+    sendBroadcast(new Intent(Mode.CREATED));
 
   }
   public void setURLStreaming(String streamingURL) {
     this.streamingURL = streamingURL;
   }
   public void play() {
-    this.aacPlayer.playAsync(this.streamingURL);
+    if (isConnected()) {
+				this.prepare();
+		} else {
+        sendBroadcast(new Intent(Mode.STOPPED));
+    }
   }
   public void stop() {
+    this.isPrepared = false;
+    this.isPreparingStarted = false;
     if (this.isPlaying) {
+      this.isPlaying = false;
       this.aacPlayer.stop();
     }
+    sendBroadcast(new Intent(Mode.STOPPED));
   }
   public NotificationManager getNotifyManager() {
     return notifyManager;
@@ -173,6 +227,27 @@ public class Signal extends Service implements OnErrorListener,
 		return false;
 	}
 
+  public void prepare() {
+		/* ------Station- buffering-------- */
+    this.isPreparingStarted = true;
+    sendBroadcast(new Intent(Mode.START_PREPARING));
+    //this.showNotification();
+    try {
+      this.aacPlayer.playAsync(this.streamingURL);
+    } catch (IllegalArgumentException e) {
+    	e.printStackTrace();
+    	stop();
+    } catch (NullPointerException e) {
+    	e.printStackTrace();
+    	stop();
+    } catch (IllegalStateException e) {
+    	e.printStackTrace();
+    	stop();
+    } catch (Exception e) {
+    	e.printStackTrace();
+    	stop();
+    }
+  }
   @Override
 	public IBinder onBind(Intent intent) {
         return binder;
@@ -180,20 +255,44 @@ public class Signal extends Service implements OnErrorListener,
 
   @Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+    if (this.isPlaying) {
+      //STATUS_PLAYING
+      sendBroadcast(new Intent(Mode.PLAYING));
+    } else if (this.isPreparingStarted) {
+			sendBroadcast(new Intent(Mode.START_PREPARING));
+		} else {
+			sendBroadcast(new Intent(Mode.STARTED));
+		}
+
+		if (this.isPlaying) {
+        sendBroadcast(new Intent(Mode.PLAYING));
+    }
 		return Service.START_NOT_STICKY;
 	}
   @Override
 	public void onPrepared(MediaPlayer _mediaPlayer) {
-
+    this.isPreparingStarted = false;
+    this.isPrepared = true;
+    sendBroadcast(new Intent(Mode.PREPARED));
 	}
 
 	@Override
 	public void onCompletion(MediaPlayer mediaPlayer) {
-
+    this.isPlaying = false;
+    this.isPrepared = false;
+    this.aacPlayer.stop();
+		//this.aacPlayer.reset();
+    sendBroadcast(new Intent(Mode.COMPLETED));
 	}
   @Override
 	public boolean onInfo(MediaPlayer mp, int what, int extra) {
-
+    if (what == 701) {
+      this.isPlaying = false;
+      sendBroadcast(new Intent(Mode.BUFFERING_START));
+    } else if (what == 702) {
+      this.isPlaying = true;
+      sendBroadcast(new Intent(Mode.BUFFERING_END));
+    }
 		return false;
 	}
 
@@ -210,6 +309,7 @@ public class Signal extends Service implements OnErrorListener,
 			//Log.v("ERROR", "MEDIA ERROR UNKNOWN " + extra);
 			break;
 		}
+    sendBroadcast(new Intent(Mode.ERROR));
 		return false;
 	}
 
@@ -220,22 +320,29 @@ public class Signal extends Service implements OnErrorListener,
   @Override
   public void playerPCMFeedBuffer(boolean isPlaying, int bufSizeMs, int bufCapacityMs) {
     float percent = bufSizeMs * 100 / bufCapacityMs;
-    this.isPlaying = isPlaying;
-    if (this.isPlaying == true) {
+    if (isPlaying == true) {
+      this.isPrepared = true;
+      this.isPreparingStarted = false;
       if (bufSizeMs < AAC_BUFFER_CAPACITY_MS) {
         this.isPlaying = false;
+        sendBroadcast(new Intent(Mode.BUFFERING_START));
         //buffering
       } else {
         this.isPlaying = true;
+        sendBroadcast(new Intent(Mode.PLAYING));
         //playing
       }
     } else {
       //buffering
+      this.isPlaying = false;
+      sendBroadcast(new Intent(Mode.BUFFERING_START));
     }
   }
   @Override
   public void playerException( final Throwable t) {
     this.isPlaying = false;
+    this.isPreparingStarted = false;
+    sendBroadcast(new Intent(Mode.ERROR));
   //  TODO
   }
   @Override
@@ -249,6 +356,8 @@ public class Signal extends Service implements OnErrorListener,
   @Override
   public void playerStopped(int perf) {
     this.isPlaying = false;
+    this.isPreparingStarted = false;
+    sendBroadcast(new Intent(Mode.STOPPED));
   //  TODO
   }
 

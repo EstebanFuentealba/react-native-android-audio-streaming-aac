@@ -8,9 +8,13 @@
         android:minSdkVersion="14"
         android:targetSdkVersion="23" />
 
-    <service
-        android:name="cl.json.react.Signal"
-        android:enabled="true"
-        android:theme="@android:style/Theme.NoTitleBar" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application android:allowBackup="true" >
+        <service
+            android:name="cl.json.react.Signal"
+            android:enabled="true"
+            android:theme="@android:style/Theme.NoTitleBar" />
+    </application>
 
 </manifest>
