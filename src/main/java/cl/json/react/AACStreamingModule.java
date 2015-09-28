@@ -1,5 +1,11 @@
 package cl.json.react;
 
+import android.content.Intent;
+
+import cl.json.react.Signal;
+import android.content.ServiceConnection;
+import android.content.ComponentName;
+import android.os.IBinder;
 import android.content.Context;
 
 import com.facebook.react.bridge.NativeModule;
@@ -7,53 +13,65 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import android.media.AudioTrack;
-import com.spoledge.aacdecoder.MultiPlayer;
-import com.spoledge.aacdecoder.PlayerCallback;
+public class AACStreamingModule extends ReactContextBaseJavaModule implements ServiceConnection {
 
-public class AACStreamingModule extends ReactContextBaseJavaModule implements PlayerCallback {
+  private ReactApplicationContext context;
+  private Class<?> clsActivity;
+  private static Signal signal;
+  private Intent bindIntent;
 
-  private Context context;
-  private MultiPlayer aacPlayer;
-  public AACStreamingModule(ReactApplicationContext reactContext) {
+
+  public AACStreamingModule(ReactApplicationContext reactContext, Class<?> cls) {
     super(reactContext);
+    this.clsActivity = cls;
+    this.context = reactContext;
+    try {
+			bindIntent = new Intent(this.context, Signal.class);
+			this.context.bindService(bindIntent, this, Context.BIND_AUTO_CREATE);
+		} catch (Exception e) {
 
-    this.context = (Context) reactContext;
-    this.aacPlayer = new MultiPlayer(this);
+		}
   }
+  @Override
+	public void onServiceConnected(ComponentName className, IBinder service) {
+		signal = ((Signal.RadioBinder) service).getService();
+    signal.setData(this.context, clsActivity);
+    signal.showNotification();
+	}
 
+	@Override
+	public void onServiceDisconnected(ComponentName className) {
+		signal = null;
+	}
   @Override
   public String getName() {
     return "AACStreamingAndroid";
   }
-  @Override
-  public void playerStarted() {
-    //  TODO
-  }
-  @Override
-  public void playerPCMFeedBuffer(boolean isPlaying, int bufSizeMs, int bufCapacityMs) {
-    float percent = bufSizeMs * 100 / bufCapacityMs;
-  }
-  @Override
-  public void playerException( final Throwable t) {
-    //  TODO
-  }
-  @Override
-  public void playerMetadata( final String key, final String value ) {
-    //  TODO
-  }
-  @Override
-  public void playerAudioTrackCreated( AudioTrack atrack ) {
-    //  TODO
-  }
-  @Override
-  public void playerStopped(int perf) {
-    //  TODO
+
+  private void sendEvent(ReactContext reactContext,String eventName, @Nullable WritableMap params) {
+    this.context
+        .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit(eventName, params);
   }
 
   @ReactMethod
   public void setURLStreaming(String streamingURL) {
-    aacPlayer.playAsync(streamingURL); // URL of MP3 or AAC stream
+    signal.setURLStreaming(streamingURL); // URL of MP3 or AAC stream
   }
+  @ReactMethod
+  public void play() {
+    signal.play();
+  }
+  @ReactMethod
+  public void stop() {
+    signal.stop();
+  }
+  @ReactMethod
+  public void destroyNotification() {
+    signal.exitNotification();
+  }
+
+
 }

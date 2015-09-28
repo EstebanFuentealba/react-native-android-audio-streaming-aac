@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="cl.json.react" >
+    <service
+        android:name="cl.json.react.Signal"
+        android:enabled="true"
+        android:theme="@android:style/Theme.NoTitleBar"/>
 </manifest>

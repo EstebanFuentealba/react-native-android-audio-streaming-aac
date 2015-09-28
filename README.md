@@ -5,8 +5,6 @@ A react native wrapper for [aacdecoder-android](https://code.google.com/p/aacdec
 
 ## Setup
 
-```
-
 * `android/settings.gradle`
 
 ```gradle
@@ -44,7 +42,7 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
       .setBundleAssetName("index.android.bundle")
       .setJSMainModuleName("index.android")
       .addPackage(new MainReactPackage())
-      .addPackage(new AACStreamingPackage())      // <------- add package
+      .addPackage(new AACStreamingPackage(MainActivity.class))      // <------- add package
       .setUseDeveloperSupport(BuildConfig.DEBUG)
       .setInitialLifecycleState(LifecycleState.RESUMED)
       .build();
@@ -57,6 +55,16 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
   ......
 
 }
+```
+
+* add service to android/app/src/main/AndroidManifest.xml
+
+```xml
+<service
+    android:name="cl.json.react.Signal"
+    android:enabled="true"
+    android:theme="@android:style/Theme.NoTitleBar"/>
+
 ```
 
 ## Usage
