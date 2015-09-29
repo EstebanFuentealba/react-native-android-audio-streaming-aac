@@ -65,3 +65,12 @@ var AACStreamingAndroid = require('react-native-android-audio-streaming-aac');
 AACStreamingAndroid.setURLStreaming('http://tunein.digitalproserver.com/bioconcebb.aac');
 AACStreamingAndroid.play();
 ```
+
+
+# Run example
+
+* `cd example`
+* `npm install`
+* `react-native start`
+another tab
+* `react-native run-android`
