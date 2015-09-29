@@ -1,0 +1,6 @@
+rootProject.name = 'example'
+
+include ':app'
+
+include ':react-native-android-audio-streaming-aac'
+project(':react-native-android-audio-streaming-aac').projectDir = new File(settingsDir, '../node_modules/react-native-android-audio-streaming-aac')
