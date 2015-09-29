@@ -1,7 +1,7 @@
 {
   "name": "react-native-android-audio-streaming-aac",
   "description": "A react native streaming player",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "main": "index.android.js",
   "repository": {
     "type": "git",
