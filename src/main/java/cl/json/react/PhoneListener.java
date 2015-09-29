@@ -18,15 +18,15 @@ public class PhoneListener extends PhoneStateListener {
     switch (state){
       case TelephonyManager.CALL_STATE_IDLE:
         //CALL_STATE_IDLE;
-        restart = new Intent(this.module.getReactApplicationContextModule(), this.module.getClassActivity());
-        restart.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        this.module.getReactApplicationContextModule().startActivity(restart);
+        //restart = new Intent(this.module.getReactApplicationContextModule(), this.module.getClassActivity());
+        //restart.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //this.module.getReactApplicationContextModule().startActivity(restart);
       break;
       case TelephonyManager.CALL_STATE_OFFHOOK:
         //CALL_STATE_OFFHOOK;
-        restart = new Intent(this.module.getReactApplicationContextModule(), this.module.getClassActivity());
-        restart.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        this.module.getReactApplicationContextModule().startActivity(restart);
+        //restart = new Intent(this.module.getReactApplicationContextModule(), this.module.getClassActivity());
+        //restart.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        //this.module.getReactApplicationContextModule().startActivity(restart);
       break;
       case TelephonyManager.CALL_STATE_RINGING:
         //CALL_STATE_RINGING

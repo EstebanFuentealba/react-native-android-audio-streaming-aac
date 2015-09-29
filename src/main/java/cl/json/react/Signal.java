@@ -81,26 +81,26 @@ public class Signal extends Service implements OnErrorListener,
 
 
     registerReceiver(this.eventsReceiver, new IntentFilter(Mode.CREATED));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.DESTROYED));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.STARTED));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.CONNECTING));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.START_PREPARING));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.PREPARED));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.PLAYING));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.STOPPED));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.COMPLETED));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.ERROR));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.BUFFERING_START));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.BUFFERING_END));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.METADATA_UPDATED));
-		registerReceiver(this.eventsReceiver, new IntentFilter(Mode.ALBUM_UPDATED));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.DESTROYED));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.STARTED));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.CONNECTING));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.START_PREPARING));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.PREPARED));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.PLAYING));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.STOPPED));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.COMPLETED));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.ERROR));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.BUFFERING_START));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.BUFFERING_END));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.METADATA_UPDATED));
+    registerReceiver(this.eventsReceiver, new IntentFilter(Mode.ALBUM_UPDATED));
 
 
     this.phoneStateListener = new PhoneListener(this.module);
     this.phoneManager = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-		if (this.phoneManager != null) {
-			this.phoneManager.listen(this.phoneStateListener , PhoneStateListener.LISTEN_CALL_STATE);
-		}
+    if (this.phoneManager != null) {
+      this.phoneManager.listen(this.phoneStateListener , PhoneStateListener.LISTEN_CALL_STATE);
+    }
 
 
   }
@@ -115,6 +115,7 @@ public class Signal extends Service implements OnErrorListener,
 
 
 
+
     try {
         this.aacPlayer = new MultiPlayer(this, AAC_BUFFER_CAPACITY_MS, AAC_DECODER_CAPACITY_MS);
     } catch (UnsatisfiedLinkError e) {
@@ -122,6 +123,8 @@ public class Signal extends Service implements OnErrorListener,
     } catch (Exception e) {
       e.printStackTrace();
     }
+
+
     this.notifyManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     try {
       java.net.URL.setURLStreamHandlerFactory( new java.net.URLStreamHandlerFactory(){
@@ -323,7 +326,7 @@ public class Signal extends Service implements OnErrorListener,
     if (isPlaying == true) {
       this.isPrepared = true;
       this.isPreparingStarted = false;
-      if (bufSizeMs < AAC_BUFFER_CAPACITY_MS) {
+      if (bufSizeMs < 500) {
         this.isPlaying = false;
         sendBroadcast(new Intent(Mode.BUFFERING_START));
         //buffering

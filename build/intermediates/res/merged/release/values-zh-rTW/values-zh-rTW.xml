@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/home/koala/Documentos/NodeJS/teststreaming/node_modules/react-native-android-audio-streaming-aac/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/res/values-zh-rTW/values-zh-rTW.xml -->
+    <!-- From: file:/home/esteban/Documentos/NodeJS/examplestreaming/node_modules/react-native-android-audio-streaming-aac/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/res/values-zh-rTW/values-zh-rTW.xml -->
     <eat-comment/>
     <string msgid="4600421777120114993" name="abc_action_bar_home_description">"瀏覽首頁"</string>
     <string msgid="1594238315039666878" name="abc_action_bar_up_description">"向上瀏覽"</string>
@@ -15,7 +15,7 @@
     <string msgid="893419373245838918" name="abc_searchview_description_voice">"語音搜尋"</string>
     <string msgid="3421042268587513524" name="abc_shareactionprovider_share_with">"選擇分享對象"</string>
     <string msgid="7165123711973476752" name="abc_shareactionprovider_share_with_application">"與「%s」分享"</string>
-    <!-- From: file:/home/koala/Documentos/NodeJS/teststreaming/node_modules/react-native-android-audio-streaming-aac/build/intermediates/exploded-aar/com.facebook.react/react-native/0.11.0/res/values-zh-rTW/values-zh-rTW.xml -->
+    <!-- From: file:/home/esteban/Documentos/NodeJS/examplestreaming/node_modules/react-native-android-audio-streaming-aac/build/intermediates/exploded-aar/com.facebook.react/react-native/0.11.0/res/values-zh-rTW/values-zh-rTW.xml -->
     <eat-comment/>
     <string name="catalyst_debugjs">Debug JS</string>
     <string name="catalyst_inspect_element">檢查元素</string>

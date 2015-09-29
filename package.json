@@ -1,15 +1,29 @@
 {
-  "name":"react-native-android-audio-streaming-aac",
+  "name": "react-native-android-audio-streaming-aac",
   "description": "A react native streaming player",
   "version": "0.0.2",
   "main": "index.android.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:EstebanFuentealba/react-native-android-audio-streaming-aac.git"
+    "url": "git+ssh://git@github.com/EstebanFuentealba/react-native-android-audio-streaming-aac.git"
   },
-  "author": "Esteban Fuentealba <efuentealba@json.cl>",
+  "author": {
+    "name": "Esteban Fuentealba",
+    "email": "efuentealba@json.cl"
+  },
   "license": "MIT",
   "peerDependencies": {
     "react-native": "^0.11.2"
-  }
+  },
+  "readme": "# React Native Android Audio Streaming AAC\n\nA react native wrapper for [aacdecoder-android](https://code.google.com/p/aacdecoder-android/).\n\n\n## Setup\n\n* `android/settings.gradle`\n\n```gradle\n...\ninclude ':react-native-android-audio-streaming-aac'\nproject(':react-native-android-audio-streaming-aac').projectDir = new File(settingsDir, '../node_modules/react-native-android-audio-streaming-aac')\n```\n\n* `android/app/build.gradle`\n\n```gradle\n...\ndependencies {\n    ...\n    compile project(':react-native-android-audio-streaming-aac')\n}\n```\n\n* register module (in MainActivity.java)\n\n```java\nimport cl.json.react.AACStreamingPackage;  // <--- import\n\npublic class MainActivity extends Activity implements DefaultHardwareBackBtnHandler {\n\n  ......\n\n  @Override\n  protected void onCreate(Bundle savedInstanceState) {\n    super.onCreate(savedInstanceState);\n    mReactRootView = new ReactRootView(this);\n\n    mReactInstanceManager = ReactInstanceManager.builder()\n      .setApplication(getApplication())\n      .setBundleAssetName(\"index.android.bundle\")\n      .setJSMainModuleName(\"index.android\")\n      .addPackage(new MainReactPackage())\n      .addPackage(new AACStreamingPackage(MainActivity.class))      // <------- add package\n      .setUseDeveloperSupport(BuildConfig.DEBUG)\n      .setInitialLifecycleState(LifecycleState.RESUMED)\n      .build();\n\n    mReactRootView.startReactApplication(mReactInstanceManager, \"ExampleRN\", null);\n\n    setContentView(mReactRootView);\n  }\n\n  ......\n\n}\n```\n\n* add service to android/app/src/main/AndroidManifest.xml\n\n```xml\n<service\n    android:name=\"cl.json.react.Signal\"\n    android:enabled=\"true\"\n    android:theme=\"@android:style/Theme.NoTitleBar\"/>\n\n```\n\n## Usage\n\n```js\nvar AACStreamingAndroid = require('react-native-android-audio-streaming-aac');\n\nAACStreamingAndroid.setURLStreaming('http://tunein.digitalproserver.com/bioconcebb.aac');\n```\n",
+  "readmeFilename": "README.md",
+  "gitHead": "d14870f657d5adc304c79e2f38ad4d2b430f3be1",
+  "bugs": {
+    "url": "https://github.com/EstebanFuentealba/react-native-android-audio-streaming-aac/issues"
+  },
+  "homepage": "https://github.com/EstebanFuentealba/react-native-android-audio-streaming-aac#readme",
+  "_id": "react-native-android-audio-streaming-aac@0.0.2",
+  "scripts": {},
+  "_shasum": "523fb989383c8b2772384f5313c80425014efc0b",
+  "_from": "react-native-android-audio-streaming-aac@*"
 }

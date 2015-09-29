@@ -57,20 +57,11 @@ public class MainActivity extends Activity implements DefaultHardwareBackBtnHand
 }
 ```
 
-* add service to android/app/src/main/AndroidManifest.xml
-
-```xml
-<service
-    android:name="cl.json.react.Signal"
-    android:enabled="true"
-    android:theme="@android:style/Theme.NoTitleBar"/>
-
-```
-
 ## Usage
 
 ```js
 var AACStreamingAndroid = require('react-native-android-audio-streaming-aac');
 
 AACStreamingAndroid.setURLStreaming('http://tunein.digitalproserver.com/bioconcebb.aac');
+AACStreamingAndroid.play();
 ```
