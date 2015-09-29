@@ -92,4 +92,4 @@ var styles = StyleSheet.create({
   },
 });
 
-AppRegistry.registerComponent('examplestreaming', () => examplestreaming);
+AppRegistry.registerComponent('example', () => examplestreaming);
