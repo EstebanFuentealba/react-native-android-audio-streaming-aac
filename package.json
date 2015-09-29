@@ -1,12 +1,17 @@
 {
   "name": "react-native-android-audio-streaming-aac",
   "description": "A react native streaming player",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "index.android.js",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com/EstebanFuentealba/react-native-android-audio-streaming-aac.git"
   },
+  "keywords": [
+    "react-component",
+    "react-native",
+    "android"
+  ],
   "author": {
     "name": "Esteban Fuentealba",
     "email": "efuentealba@json.cl"
